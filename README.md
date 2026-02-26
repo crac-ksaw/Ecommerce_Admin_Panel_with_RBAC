@@ -102,6 +102,8 @@ Runs:
 - Product deletion is implemented as soft delete using `deleted_at`.
 - Soft-deleted products are excluded from product listing.
 - Restore can be done manually by setting `deleted_at = NULL` in the database.
+- <img width="1916" height="252" alt="image" src="https://github.com/user-attachments/assets/ef5dcb18-e0f8-4c71-95a1-b9276519a478" />
+
 
 ## API Summary
 - `POST /api/auth/login`
