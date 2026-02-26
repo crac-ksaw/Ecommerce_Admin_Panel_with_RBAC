@@ -33,6 +33,7 @@ All restrictions are enforced on the backend.
 - `sku` (unique)
 - `inventory_quantity`
 - `status` (`active` / `inactive`)
+- `deleted_at` (nullable, used for soft delete)
 - `created_at`
 - `updated_at`
 
@@ -46,40 +47,48 @@ Schema choices:
 - `users.role_id` references `roles.id` (normalized role model).
 - `users.email` is unique.
 - `products.sku` is unique.
+- Product deletion uses soft delete (`deleted_at`).
 - Timestamps are stored in `created_at` and `updated_at`.
 
 ## Environment Variables
-Use one root `.env` file:
-
-```bash
-copy .env.example .env
-```
-
-Required variables:
+Backend env (`backend/.env`):
 - `DATABASE_URL`
 - `JWT_SECRET`
 - `PORT`
+
+Frontend env (`frontend/.env`):
 - `VITE_API_BASE`
 
+
 ## Setup
-1. Install dependencies
+1. One-time setup (single command)
 
 ```bash
-npm install
-cd backend && npm install
-cd ../frontend && npm install
-cd ..
+npm run setup
 ```
 
-2. Run migrations and seed
+This command does all of the following:
+- Installs root, backend, and frontend dependencies
+- Creates `backend/.env` and `frontend/.env` from examples (if missing)
+- Runs Prisma migrations
+- Runs seed data
+- Stops on first failure with a clear step-specific error message
+- Cleans up `.env` files created by that failed setup run
 
+2. Edit env files if needed
+
+```bash
+copy backend\\.env.example backend\\.env
+copy frontend\\.env.example frontend\\.env
+```
+
+To check the database using prisma interface:
 ```bash
 cd backend
-npm run prisma:migrate
-npm run prisma:seed
+npx prisma studio
 ```
 
-3. Start project (single command from root)
+3. Start project from the root directory:
 
 ```bash
 npm run dev
@@ -89,6 +98,11 @@ Runs:
 - Backend: `http://localhost:4000`
 - Frontend: `http://localhost:5173`
 
+## Soft Deletion
+- Product deletion is implemented as soft delete using `deleted_at`.
+- Soft-deleted products are excluded from product listing.
+- Restore can be done manually by setting `deleted_at = NULL` in the database.
+
 ## API Summary
 - `POST /api/auth/login`
 - `GET /api/products` (Admin, Sales)
@@ -96,7 +110,7 @@ Runs:
 - `PUT /api/products/:id`
   - Admin: full update
   - Sales: `name`, `description`, `price` only
-- `DELETE /api/products/:id` (Admin only)
+- `DELETE /api/products/:id` (Admin only, soft delete)
 
 ## Auth / RBAC Approach
 - Passwords are hashed with bcrypt.

@@ -7,8 +7,8 @@ import {
 } from "../validators/product";
 import {
   createProduct,
-  deleteProduct,
   listProducts,
+  softDeleteProduct,
   updateProduct,
   updateProductSales,
 } from "../services/productService";
@@ -67,6 +67,6 @@ export async function remove(req: Request, res: Response) {
     throw new HttpError(400, "Invalid product id");
   }
 
-  await deleteProduct(id);
+  await softDeleteProduct(id);
   return sendSuccess(res, 200, { message: "Product deleted" });
 }

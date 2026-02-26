@@ -2,13 +2,13 @@ import dotenv from "dotenv";
 import net from "net";
 import path from "path";
 import { Server } from "http";
-import prisma from "./utils/prisma";
 
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const app = require("./app").default;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const prisma = require("./utils/prisma").default;
 
 const DB_MAX_RETRIES = 5;
 const DB_RETRY_DELAY_MS = 2000;
