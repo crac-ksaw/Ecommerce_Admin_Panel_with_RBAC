@@ -1,0 +1,73 @@
+import { ProductStatus } from "@prisma/client";
+import prisma from "../utils/prisma";
+
+export type ProductCreateInput = {
+  name: string;
+  description: string;
+  price: number;
+  sku: string;
+  inventoryQuantity: number;
+  status: "active" | "inactive";
+};
+
+export type ProductUpdateInput = ProductCreateInput;
+
+export type ProductSalesUpdateInput = {
+  name?: string;
+  description?: string;
+  price?: number;
+};
+
+function mapStatus(status: "active" | "inactive"): ProductStatus {
+  return status === "active" ? ProductStatus.ACTIVE : ProductStatus.INACTIVE;
+}
+
+export async function listProducts() {
+  return prisma.product.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function createProduct(input: ProductCreateInput) {
+  return prisma.product.create({
+    data: {
+      name: input.name,
+      description: input.description,
+      price: input.price,
+      sku: input.sku,
+      inventoryQuantity: input.inventoryQuantity,
+      status: mapStatus(input.status),
+    },
+  });
+}
+
+export async function updateProduct(id: number, input: ProductUpdateInput) {
+  return prisma.product.update({
+    where: { id },
+    data: {
+      name: input.name,
+      description: input.description,
+      price: input.price,
+      sku: input.sku,
+      inventoryQuantity: input.inventoryQuantity,
+      status: mapStatus(input.status),
+    },
+  });
+}
+
+export async function updateProductSales(id: number, input: ProductSalesUpdateInput) {
+  return prisma.product.update({
+    where: { id },
+    data: {
+      ...(input.name !== undefined ? { name: input.name } : {}),
+      ...(input.description !== undefined ? { description: input.description } : {}),
+      ...(input.price !== undefined ? { price: input.price } : {}),
+    },
+  });
+}
+
+export async function deleteProduct(id: number) {
+  return prisma.product.delete({
+    where: { id },
+  });
+}
